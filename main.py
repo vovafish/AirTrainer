@@ -4,7 +4,7 @@ import math
 import time
 pygame.init()
 
-WIDTH, HEIGHT = 600, 400
+WIDTH, HEIGHT = 800, 600
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Aim Improver")
@@ -18,7 +18,7 @@ BG_COLOR = (84, 69, 23)
 LIVES = 5
 TOP_BAR_HEIGHT = 60
 
-LABEL_FONT = pygame.font.SysFont("comicsans", 30, False, True)
+LABEL_FONT = pygame.font.SysFont("comicsans", 24, False, True)
 
 class Target:
     MAX_SIZE = 30
@@ -71,7 +71,16 @@ def draw_top_bar(win, elpased_time, targets_pressed, misses):
     pygame.draw.rect(win, "pink", (0, 0, WIDTH, TOP_BAR_HEIGHT))
     time_label = LABEL_FONT.render(f"Time: {format_time(elpased_time)}", 1, "black")
 
+    speed = round(targets_pressed / elpased_time, 1)
+    speed_label = LABEL_FONT.render(f"Speed: {speed} t/s", 1, "black")
+    hits_label = LABEL_FONT.render(f"Hits: {targets_pressed}", 1, "black")
+    lives_label = LABEL_FONT.render(f"Lives: {LIVES - misses}", 1, "black")
+
     win.blit(time_label, (5, 5)) #to display another surface. so it means you can put text on top of another surface
+    win.blit(speed_label, (250, 5))
+    win.blit(hits_label, (450, 5))
+    win.blit(lives_label, (650, 5))
+
 
 def main():
     run = True
