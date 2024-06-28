@@ -15,6 +15,10 @@ TARGET_EVENT = pygame.USEREVENT
 TARGET_PADDING = 30
 
 BG_COLOR = (84, 69, 23)
+LIVES = 5
+TOP_BAR_HEIGHT = 60
+
+LABEL_FONT = pygame.font.SysFont("comicsans", 30, False, True)
 
 class Target:
     MAX_SIZE = 30
@@ -55,16 +59,30 @@ def draw(win, targets):
     for target in targets:
         target.draw(win)
     
-    pygame.display.update()
+
+def format_time(secs):
+    milliseconds = math.floor(int(secs * 1000 % 1000) / 100)
+    seconds = int(round(secs % 60, 1))
+    minutes = int(secs // 60)
+
+    return f"{minutes:02d}:{seconds:02d}.{milliseconds:02d}" #02d means 2 digits if it doesnt have 2 digits start with 0
+
+def draw_top_bar(win, elpased_time, targets_pressed, misses):
+    pygame.draw.rect(win, "pink", (0, 0, WIDTH, TOP_BAR_HEIGHT))
+    time_label = LABEL_FONT.render(f"Time: {format_time(elpased_time)}", 1, "black")
+
+    win.blit(time_label, (5, 5)) #to display another surface. so it means you can put text on top of another surface
+
 def main():
     run = True
     targets = []
     clock = pygame.time.Clock()
 
-    target_pressed = 0
+    targets_pressed = 0
     clicks = 0
     misses = 0
     start_time = time.time()
+    elapsed_time = time.time() - start_time
 
     pygame.time.set_timer(TARGET_EVENT, TARGET_INCREMENT)
 
@@ -72,6 +90,7 @@ def main():
         clock.tick(60)
         click = False
         mouse_pos = pygame.mouse.get_pos()
+        elapsed_time = time.time() - start_time
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -99,9 +118,14 @@ def main():
             
             if click and target.collide(*mouse_pos): #breaks tuple into individual variables
                 targets.remove(target)
-                target_pressed += 1
+                targets_pressed += 1
+
+            if misses >= LIVES:
+                pass #finish the game
 
         draw(WIN, targets)
+        draw_top_bar(WIN, elapsed_time, targets_pressed, misses)
+        pygame.display.update()
 
     pygame.quit()
 
